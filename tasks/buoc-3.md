@@ -150,10 +150,10 @@ Nếu thấy `data/train_batch1.csv`, bạn đã commit nhầm file. Thêm file 
 
 **Lỗi `dvc push` - file quá lớn**
 
-Không có vấn đề. Các cloud provider đều hỗ trợ file có kích thước lớn trong gói miễn phí/trial. Kiểm tra lại xác thực:
+Không có vấn đề. Xác nhận local AWS profile còn đăng nhập và bucket S3 vẫn là remote DVC:
 
 ```bash
-export GOOGLE_APPLICATION_CREDENTIALS=sa-key.json
+aws sso login
 dvc push
 ```
 

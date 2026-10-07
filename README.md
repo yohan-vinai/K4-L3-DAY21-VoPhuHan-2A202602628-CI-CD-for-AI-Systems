@@ -11,9 +11,9 @@ Khoá: K4
 Sau khi hoàn thành lab này, bạn có khả năng:
 
 1. Thiết lập quá trình theo dõi thí nghiệm máy học bằng MLflow trên máy tính cá nhân.
-2. Quản lý và phiên bản hóa dữ liệu bằng DVC với cloud object storage (GCP / AWS / Azure) làm remote.
+2. Quản lý và phiên bản hóa dữ liệu bằng DVC với Amazon S3 làm remote.
 3. Xây dựng pipeline CI/CD hoàn chỉnh trên GitHub Actions với bốn giai đoạn: kiểm thử, huấn luyện, kiểm tra chất lượng, triển khai.
-4. Triển khai mô hình lên máy chủ ảo trên cloud (GCE / EC2 / Azure VM) dưới dạng REST API bằng FastAPI.
+4. Triển khai mô hình lên Amazon EC2 dưới dạng REST API bằng FastAPI.
 5. Chọn đúng chỉ số đánh giá cho bài toán có phân bố lớp mất cân bằng.
 6. Mô phỏng quy trình huấn luyện liên tục: bổ sung dữ liệu mới và kích hoạt pipeline hoàn toàn tự động.
 
@@ -36,8 +36,8 @@ Toàn bộ lab được triển khai theo ba bước liên tiếp, mỗi bước
       |                                          |
       |  dvc pull                                |  upload model
       v                                          v
-[Cloud Object Storage]                      [Cloud VM]
-  data/                                       income-api (FastAPI)
+[Amazon S3]                                 [Amazon EC2]
+  dvc/                                        income-api (FastAPI)
   artifacts/current/                            POST /score
 ```
 
@@ -51,18 +51,16 @@ Phần mềm cần cài đặt trên máy tính cá nhân:
 
 - Python 3.10 trở lên
 - Git và tài khoản GitHub
-- Tài khoản cloud (chọn một trong ba: GCP, AWS, hoặc Azure — gói miễn phí/trial đủ dùng cho lab này)
-- CLI của cloud provider đã chọn (xem hướng dẫn cài đặt chi tiết tại tasks/buoc-2.md)
+- Tài khoản AWS có quyền tạo S3 bucket, IAM role và EC2 instance
+- AWS CLI v2 và một AWS profile đã đăng nhập bằng IAM Identity Center/SSO
 
 Kiểm tra cài đặt:
 
 ```bash
 python --version     # Python 3.10.x trở lên
 git --version
-# Kiểm tra CLI của cloud provider đã chọn (một trong ba):
-gcloud --version     # GCP
-aws --version        # AWS
-az --version         # Azure
+aws --version
+aws sts get-caller-identity
 ```
 
 ---
@@ -217,15 +215,13 @@ __pycache__/
 mlflow==2.13.0
 scikit-learn==1.4.2
 pandas==2.2.2
-# DVC extra theo provider: [gs]=GCP, [s3]=AWS, [azure]=Azure
-dvc[gs]==3.50.1
+dvc[s3]==3.50.1
 pathspec==0.11.2
 pytest==8.2.0
 fastapi==0.111.0
 uvicorn==0.29.0
 joblib==1.4.2
-# Cloud SDK theo provider: google-cloud-storage (GCP), boto3 (AWS), azure-storage-blob (Azure)
-google-cloud-storage==2.16.0
+boto3
 pyyaml==6.0.1
 ```
 
@@ -288,7 +284,7 @@ không nộp rời.
 | 2 | `02-actions-buoc-2.png` | GitHub Actions tab hiển thị cả bốn jobs màu xanh (Bước 2) |
 | 3 | `03-actions-buoc-3.png` | GitHub Actions của lần chạy do commit dữ liệu kích hoạt (Bước 3) |
 | 4 | `04-curl-api.png` | Kết quả `curl http://VM_IP:8080/healthz` và `curl http://VM_IP:8080/score` |
-| 5 | `05-cloud-storage.png` | Cloud Storage Console hiển thị dữ liệu `dvc/` và model đã upload |
+| 5 | `05-cloud-storage.png` | Amazon S3 Console hiển thị dữ liệu `dvc/` và model đã upload |
 
 **3. File báo cáo ngắn** (không quá 1 trang A4) — điền vào template
 [nop-bai/bao-cao.md](nop-bai/bao-cao.md), gồm:
