@@ -111,6 +111,8 @@ jobs:
       contents: read
       id-token: write
     steps:
+      - uses: actions/checkout@v4
+
       - name: Download approved model bundle
         uses: actions/download-artifact@v4
         with:
